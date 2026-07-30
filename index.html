@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Price Lists — Prototype</title>
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F3F4F6;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.frame{width:1400px;height:780px;background:#fff;border-radius:12px;border:1px solid #E5E7EB;overflow:hidden;display:flex;flex-direction:column;position:relative}
+
+/* TOP NAR */
+.topbar{height:44px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;padding:0 20px;gap:8px;flex-shrink:0}
+.bc{display:flex;align-items:center;gap:5px;font-size:12px;color:#6B7280;flex:1}
+.bc a{color:#2563EB;text-decoration:none;cursor:pointer}
+.bc a:hover{text-decoration:underline}
+.bc-sep{color:#D1D5DB;font-size:10px}
+.bc-cur{color:#111827;font-weight:500}
+.tb-right{display:flex;align-items:center;gap:8px}
+.org-pill{display:flex;align-items:center;gap:5px;height:30px;padding:0 12px;border:1px solid #E5E7EB;border-radius:999px;font-size:12px;color:#374151;cursor:pointer;background:#fff}
+.ic-btn{width:30px;height:30px;border:1px solid #E5E7EB;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;color:#6B7280;font-size:14px;position:relative}
+.notif-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;background:#EF4444;border-radius:50%;border:1.5px solid #fff}
+
+/* MAIN LAYOUT */
+.main{flex:1;display:flex;overflow:hidden;position:relative}
+
+/* SIDEBAR */
+.sidebar{width:52px;background:#fff;border-right:1px solid #E5E7EB;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
+.sb-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;font-size:18px;transition:background .1s}
+.sb-icon:hover{background:#F3F4F6;color:#111827}
+.sb-icon.on{background:#EFF6FF;color:#2563EB}
+
+/* PAGE */
+.page{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.page-inner{flex:1;overflow-y:auto;padding:20px 24px}
+
+/* PAGE HEADER */
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.page-title{font-size:18px;font-weight:600;color:#111827;display:flex;align-items:center;gap:6px}
+.required-dot{width:7px;height:7px;border-radius:50%;background:#EF4444;margin-top:2px}
+.btn-primary{height:32px;padding:0 14px;background:#2563EB;color:#fff;border:none;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px}
+.btn-primary:hover{background:#1D4ED8}
+
+/* FILTER ROW */
+.filter-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;max-width:340px}
+.search-wrap i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;color:#9CA3AF;pointer-events:none}
+.search-wrap input{width:100%;height:32px;border:1px solid #E5E7EB;border-radius:999px;padding:0 12px 0 30px;font-size:12px;color:#374151;outline:none}
+.search-wrap input:focus{border-color:#2563EB}
+.filter-tag{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border:1px solid #E5E7EB;border-radius:999px;font-size:11px;color:#374151;background:#fff;cursor:pointer}
+.filter-tag .x{color:#9CA3AF;font-size:11px}
+.filters-btn{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 12px;border:1px solid #2563EB;border-radius:999px;font-size:12px;color:#2563EB;background:#fff;cursor:pointer;margin-left:auto}
+.tz{font-size:11px;color:#9CA3AF;margin-left:8px}
+
+/* DATA TABLE */
+.tbl-wrap{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;background:#fff}
+.tbl-head{display:grid;grid-template-columns:1fr 180px 200px 36px;background:#F9FAFB;border-bottom:2px solid #E5E7EB}
+.th{padding:9px 14px;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:4px;border-right:0.5px solid #E5E7EB}
+.th:last-child{border-right:none}
+.th i{font-size:11px;color:#D1D5DB}
+.col-filters{display:grid;grid-template-columns:1fr 180px 200px 36px;border-bottom:1px solid #E5E7EB}
+.cf{padding:4px 8px;border-right:0.5px solid #E5E7EB}
+.cf:last-child{border-right:none}
+.cf-inner{height:26px;border:1px solid #E5E7EB;border-radius:6px;background:#F9FAFB;display:flex;align-items:center;gap:3px;padding:0 7px}
+.cf-inner i{font-size:10px;color:#9CA3AF}
+.cf-inner span{font-size:11px;color:#9CA3AF}
+.tbl-row{display:grid;grid-template-columns:1fr 180px 200px 36px;border-bottom:0.5px solid #E5E7EB;cursor:pointer;transition:background .1s}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row:hover{background:#F0F7FF}
+.tbl-row.active{background:#EFF6FF}
+.td{padding:11px 14px;font-size:13px;color:#374151;border-right:0.5px solid #E5E7EB;display:flex;align-items:center}
+.td:last-child{border-right:none;justify-content:center}
+.td-name{color:#2563EB;font-weight:500}
+.tbl-footer{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #E5E7EB;background:#F9FAFB}
+.pg-info{font-size:12px;color:#6B7280}
+.pg-btns{display:flex;align-items:center;gap:5px}
+.pg-btn{width:26px;height:26px;border:1px solid #E5E7EB;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:#6B7280}
+.pg-btn:disabled{opacity:.4;cursor:not-allowed}
+.pg-sel{height:26px;border:1px solid #E5E7EB;border-radius:999px;padding:0 8px;font-size:12px;color:#374151;background:#fff;cursor:pointer}
+
+/* SLIDEOUT */
+.slideout{position:absolute;top:0;right:0;width:500px;height:100%;background:#fff;border-left:1px solid #E5E7EB;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:10}
+.slideout.open{transform:translateX(0)}
+.so-header{padding:12px 16px;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fff}
+.so-title{font-size:14px;font-weight:600;color:#111827}
+.so-close{width:28px;height:28px;border:1px solid #E5E7EB;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;background:#fff;font-size:14px}
+.so-body{flex:1;overflow-y:auto;padding:16px}
+.so-footer{padding:12px 16px;border-top:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fff}
+
+/* SLIDEOUT FORM */
+.so-section{margin-bottom:18px}
+.so-section-title{font-size:13px;font-weight:600;color:#111827;margin-bottom:12px}
+.field-lbl{font-size:12px;color:#6B7280;margin-bottom:4px;display:block}
+.field-input{width:100%;height:36px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font-size:13px;color:#111827;outline:none;background:#fff}
+.field-input:focus{border-color:#2563EB}
+.field-input:disabled{background:#F9FAFB;color:#9CA3AF;cursor:not-allowed}
+.sel-wrap{position:relative}
+.sel-wrap i.chev{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:#9CA3AF;pointer-events:none}
+.field-select{width:100%;height:36px;border:1px solid #D1D5DB;border-radius:8px;padding:0 30px 0 12px;font-size:13px;color:#111827;appearance:none;background:#fff;cursor:pointer;outline:none}
+.field-select:focus{border-color:#2563EB}
+.multi-field{min-height:36px;border:1px solid #D1D5DB;border-radius:8px;padding:4px 8px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#fff;cursor:pointer}
+.sel-pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:2px 8px;border-radius:999px;background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8}
+.sel-pill button{background:none;border:none;cursor:pointer;color:#1D4ED8;padding:0;line-height:1;font-size:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.checkbox-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;cursor:pointer}
+.checkbox-row input{accent-color:#2563EB;width:15px;height:15px}
+.divider{height:1px;background:#E5E7EB;margin:14px 0}
+
+/* FEES SECTION */
+.fees-tabs{display:flex;border-bottom:1px solid #E5E7EB;margin-bottom:12px}
+.fee-tab{padding:8px 14px;border:none;background:transparent;font-size:13px;font-weight:500;color:#6B7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.fee-tab.on{color:#2563EB;border-bottom-color:#2563EB}
+.fee-tab-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.fee-tab-lbl-txt{font-size:12px;color:#6B7280}
+.btn-add-fee{display:flex;align-items:center;gap:4px;height:26px;padding:0 10px;border-radius:999px;border:none;background:#2563EB;color:#fff;font-size:11px;font-weight:500;cursor:pointer}
+
+/* FEE ACCORDION */
+.fee-card{border:1px solid #E5E7EB;border-radius:10px;margin-bottom:7px;position:relative}
+.fee-card-hd{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;cursor:pointer;background:#fff;transition:background .1s;border-radius:10px}
+.fee-card.open .fee-card-hd{border-radius:10px 10px 0 0}
+.fee-card-hd:hover{background:#F9FAFB}
+.fee-card-body{display:none;border-top:1px solid #E5E7EB;padding:14px 12px;background:#F9FAFB;border-radius:0 0 10px 10px}
+.fee-card.open .fee-card-body{display:block}
+.fee-card.open .fee-chev{transform:rotate(180deg)}
+.fee-chev{transition:transform .15s;font-size:13px;color:#9CA3AF;flex-shrink:0}
+.fee-tag{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 7px;border-radius:999px;background:#F3F4F6;border:1px solid #E5E7EB;color:#6B7280;cursor:default;position:relative}
+#floating-tooltip{display:none;position:fixed;background:#fff;border:1px solid #E5E7EB;border-radius:8px;padding:8px 10px;white-space:nowrap;z-index:9999;min-width:130px;box-shadow:0 4px 12px rgba(0,0,0,0.12);pointer-events:none}
+.fee-tooltip-title{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:.04em;margin:0 0 5px}
+.fee-tooltip-pill{display:inline-flex;font-size:11px;padding:2px 7px;border-radius:999px;background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8;margin:2px 2px 0 0}
+.fee-val{font-size:12px;font-weight:600;color:#2563EB;flex-shrink:0}
+.radio-group{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.radio-opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:6px 8px;border-radius:7px;border:1px solid #E5E7EB;background:#fff;transition:border-color .1s}
+.radio-opt:hover{border-color:#93C5FD}
+.radio-opt input{accent-color:#2563EB;margin-top:2px;flex-shrink:0}
+.radio-opt-lbl{font-size:13px;font-weight:500;color:#111827}
+.radio-opt-sub{font-size:11px;color:#9CA3AF;margin-top:1px}
+.radio-inline{display:flex;align-items:center;gap:14px;margin-top:6px}
+.radio-inline label{display:flex;align-items:center;gap:5px;font-size:13px;color:#374151;cursor:pointer}
+.radio-inline input{accent-color:#2563EB}
+.fee-helper{font-size:11px;color:#9CA3AF;margin-top:4px}
+.btn-ghost-sm{display:flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:999px;border:1px solid #E5E7EB;background:transparent;color:#6B7280;font-size:12px;cursor:pointer}
+.btn-ghost-sm:hover{background:#F9FAFB}
+.btn-danger-sm{display:flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:999px;border:1px solid #FCA5A5;background:#FEF2F2;color:#DC2626;font-size:12px;cursor:pointer}
+.btn-save-sm{display:flex;align-items:center;gap:4px;height:28px;padding:0 12px;border-radius:999px;border:none;background:#2563EB;color:#fff;font-size:12px;font-weight:500;cursor:pointer}
+.new-fee-label{font-size:12px;color:#9CA3AF;font-style:italic;flex:1}
+.empty-fees{padding:20px;text-align:center;border:1px dashed #D1D5DB;border-radius:8px;color:#9CA3AF;font-size:13px}
+
+/* BUTTONS */
+.btn-discard{height:34px;padding:0 16px;border-radius:999px;border:1px solid #D1D5DB;background:#fff;color:#6B7280;font-size:13px;cursor:pointer}
+.btn-save{height:34px;padding:0 16px;border-radius:999px;border:none;background:#2563EB;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:999px}
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="bc">
+      <a>Home</a><span class="bc-sep"><i class="ti ti-chevron-right"></i></span>
+      <a>Administration</a><span class="bc-sep"><i class="ti ti-chevron-right"></i></span>
+      <span class="bc-cur">Price Lists</span>
+    </div>
+    <div class="tb-right">
+      <div class="org-pill"><i class="ti ti-building" style="font-size:13px;color:#9CA3AF"></i> Organization <i class="ti ti-chevron-down" style="font-size:11px;color:#9CA3AF"></i></div>
+      <div class="ic-btn"><i class="ti ti-help-circle"></i></div>
+      <div class="ic-btn"><i class="ti ti-bell"></i><div class="notif-dot"></div></div>
+      <div class="ic-btn" style="background:#2563EB;color:#fff;border:none;font-size:13px;font-weight:600;font-style:normal">WP</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-icon"><i class="ti ti-home"></i></div>
+      <div class="sb-icon"><i class="ti ti-info-circle"></i></div>
+      <div class="sb-icon on"><i class="ti ti-layout-dashboard"></i></div>
+      <div class="sb-icon"><i class="ti ti-arrow-left-right"></i></div>
+      <div class="sb-icon"><i class="ti ti-star"></i></div>
+      <div style="flex:1"></div>
+      <div class="sb-icon"><i class="ti ti-logout"></i></div>
+    </div>
+
+    <!-- PAGE -->
+    <div class="page">
+      <div class="page-inner">
+
+        <div class="page-hd">
+          <div class="page-title">Price Lists <div class="required-dot"></div></div>
+          <button class="btn-primary" onclick="openSlideout(null)"><i class="ti ti-plus" style="font-size:13px"></i> Add price list</button>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filter-row">
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" placeholder="Search by Price list name"></div>
+          <div class="filter-tag"><i class="ti ti-calendar" style="font-size:11px;color:#6B7280"></i> 04/01/2026 – 04/30/2026 <span class="x"><i class="ti ti-x"></i></span></div>
+          <div class="filter-tag"><i class="ti ti-building" style="font-size:11px;color:#6B7280"></i> Organizations: 1 <span class="x"><i class="ti ti-x"></i></span></div>
+          <div class="tz">Time zone: Web Browser Set (UTC+01:00)</div>
+          <div class="filters-btn"><i class="ti ti-adjustments-horizontal" style="font-size:12px"></i> Filters 2</div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <div class="th">Price List Name <i class="ti ti-arrows-sort"></i></div>
+            <div class="th">Payment Method <i class="ti ti-arrows-sort"></i></div>
+            <div class="th">Organization <i class="ti ti-arrows-sort"></i></div>
+            <div class="th"></div>
+          </div>
+          <div class="col-filters">
+            <div class="cf"><div class="cf-inner"><i class="ti ti-search"></i><span>Search…</span></div></div>
+            <div class="cf"><div class="cf-inner"><i class="ti ti-search"></i><span>Search…</span></div></div>
+            <div class="cf"><div class="cf-inner"><i class="ti ti-search"></i><span>Search…</span></div></div>
+            <div class="cf"></div>
+          </div>
+          <div id="tbl-body"></div>
+          <div class="tbl-footer">
+            <div class="pg-info">Page size: <select class="pg-sel"><option>10</option><option>25</option><option>50</option></select> &nbsp; 1–10 of 1,405 price lists</div>
+            <div class="pg-btns">
+              <button class="pg-btn" disabled><i class="ti ti-chevrons-left"></i></button>
+              <button class="pg-btn" disabled><i class="ti ti-chevron-left"></i></button>
+              <span style="font-size:12px;color:#6B7280">Page 1 of 141</span>
+              <button class="pg-btn"><i class="ti ti-chevron-right"></i></button>
+              <button class="pg-btn"><i class="ti ti-chevrons-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SLIDEOUT -->
+    <div class="slideout" id="slideout">
+      <div class="so-header">
+        <span class="so-title" id="so-title">Edit price list</span>
+        <button class="so-close" onclick="closeSlideout()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div class="so-body" id="so-body">
+
+        <!-- GENERAL INFO -->
+        <div class="so-section">
+          <div class="so-section-title">General information</div>
+          <div style="margin-bottom:10px">
+            <span class="field-lbl">Price list name</span>
+            <input class="field-input" type="text" id="f-name" placeholder="Enter price list name">
+          </div>
+          <div style="margin-bottom:10px">
+            <span class="field-lbl">Organization</span>
+            <input class="field-input" id="f-org" disabled>
+          </div>
+          <div style="margin-bottom:10px">
+            <span class="field-lbl">Currency</span>
+            <div style="display:flex;align-items:center;height:36px;border:1px solid #D1D5DB;border-radius:8px;padding:0 10px;background:#fff;gap:6px;cursor:pointer">
+              <span style="flex:1;font-size:13px;color:#374151" id="f-currency">UAE Dirham [AED]</span>
+              <i class="ti ti-x" style="font-size:12px;color:#9CA3AF"></i>
+              <i class="ti ti-chevron-down" style="font-size:12px;color:#9CA3AF"></i>
+            </div>
+          </div>
+          <label class="checkbox-row"><input type="checkbox" id="f-special"> Enable special price ID</label>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- FEES -->
+        <div class="so-section">
+          <div class="so-section-title">Fees</div>
+          <div class="fees-tabs">
+            <button class="fee-tab on" id="tab-sell" onclick="switchFeeTab('sell')">Sell rate</button>
+            <button class="fee-tab" id="tab-buy" onclick="switchFeeTab('buy')">Buy rate</button>
+          </div>
+          <div class="fee-tab-label">
+            <span class="fee-tab-lbl-txt" id="fee-tab-lbl">Sell rate rules</span>
+            <button class="btn-add-fee" onclick="addFeeRule()"><i class="ti ti-plus" style="font-size:11px"></i> Add fee</button>
+          </div>
+          <div id="fee-rules-container"></div>
+        </div>
+
+      </div>
+
+      <div class="so-footer">
+        <button class="btn-discard" onclick="closeSlideout()">Discard</button>
+        <button class="btn-save">Save changes</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var ROWS=[
+  {name:'Acmeleap 1',method:'Check',org:'PentestEntity'},
+  {name:'Acmeleap 2',method:'Check',org:'Client'},
+  {name:'Acmeleap 3',method:'Check',org:'PentestEntity'},
+  {name:'Priceleap 2',method:'Check',org:'PentestEntity'},
+  {name:'Acmeleap 3',method:'Check',org:'PentestEntity'},
+  {name:'Service 3',method:'Check',org:'PentestEntity'},
+  {name:'Acmeleap 1',method:'Check',org:'PentestEntity'},
+  {name:'AcrName 1',method:'Check',org:'PentestEntity'},
+  {name:'AcrName 2',method:'Check',org:'PentestEntity'},
+  {name:'Service 2',method:'Check',org:'Client'},
+];
+
+var FEES_SELL=[
+  {type:'Verifone Processing Fee',calc:'Fixed',val:'1',payments:['Afterpay','Affirm'],transactions:['Balance','Card activation']},
+  {type:'Verifone Processing Fee',calc:'Fixed',val:'1',payments:['Cheque'],transactions:['Balance']},
+  {type:'Selling Processing Fee',calc:'Fixed',val:'1',payments:['Afterpay','Affirm'],transactions:['Balance','Card activation']},
+];
+var FEES_BUY=[
+  {type:'Verifone Processing Fee',calc:'Percentage',val:'2',payments:['Card'],transactions:['Refund']},
+];
+
+var currentTab='sell';
+var activeRow=null;
+var feeCount=0;
+
+function buildTable(){
+  var html='';
+  ROWS.forEach(function(r,i){
+    html+='<div class="tbl-row" id="row-'+i+'" onclick="openSlideout('+i+')">'
+      +'<div class="td td-name">'+r.name+'</div>'
+      +'<div class="td">'+r.method+'</div>'
+      +'<div class="td">'+r.org+'</div>'
+      +'<div class="td"><i class="ti ti-chevron-right" style="font-size:14px;color:#9CA3AF"></i></div>'
+      +'</div>';
+  });
+  document.getElementById('tbl-body').innerHTML=html;
+}
+
+function openSlideout(idx){
+  if(activeRow!==null) document.getElementById('row-'+activeRow).classList.remove('active');
+  if(idx!==null){
+    activeRow=idx;
+    var r=ROWS[idx];
+    document.getElementById('row-'+idx).classList.add('active');
+    document.getElementById('so-title').textContent='Edit price list';
+    document.getElementById('f-name').value=r.name;
+    document.getElementById('f-org').value=r.org;
+    document.getElementById('f-currency').textContent='UAE Dirham [AED]';
+    document.getElementById('f-special').checked=false;
+  } else {
+    activeRow=null;
+    document.getElementById('so-title').textContent='Add price list';
+    document.getElementById('f-name').value='';
+    document.getElementById('f-org').value='';
+    document.getElementById('f-currency').textContent='Select currency…';
+    document.getElementById('f-special').checked=false;
+  }
+  currentTab='sell';
+  switchFeeTab('sell');
+  document.getElementById('slideout').classList.add('open');
+}
+
+function closeSlideout(){
+  document.getElementById('slideout').classList.remove('open');
+  if(activeRow!==null){document.getElementById('row-'+activeRow).classList.remove('active');activeRow=null;}
+}
+
+function switchFeeTab(t){
+  currentTab=t;
+  document.getElementById('tab-sell').classList.toggle('on',t==='sell');
+  document.getElementById('tab-buy').classList.toggle('on',t==='buy');
+  document.getElementById('fee-tab-lbl').textContent=(t==='sell'?'Sell':'Buy')+' rate rules';
+  buildFeeRules(t==='sell'?FEES_SELL:FEES_BUY);
+}
+
+function buildFeeRules(fees){
+  feeCount=0;
+  if(!fees||fees.length===0){
+    document.getElementById('fee-rules-container').innerHTML='<div class="empty-fees"><i class="ti ti-receipt" style="font-size:22px;display:block;margin-bottom:6px"></i>No fee rules yet. Add one above.</div>';
+    return;
+  }
+  var html='';
+  fees.forEach(function(f,i){
+    feeCount++;
+    var pid='fee-'+i;
+    var ptTip=f.payments.map(function(p){return '<span class="fee-tooltip-pill">'+p+'</span>';}).join('');
+    var ttTip=f.transactions.map(function(t){return '<span class="fee-tooltip-pill">'+t+'</span>';}).join('');
+    html+='<div class="fee-card" id="'+pid+'">'
+      +'<div class="fee-card-hd" onclick="toggleFee(\''+pid+'\')">'
+      +'<i class="ti ti-grip-vertical" style="font-size:14px;color:#D1D5DB;cursor:grab"></i>'
+      +'<div style="flex:1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0">'
+      +'<span style="font-size:12px;font-weight:500;color:#111827;flex-shrink:0">'+f.type+'</span>'
+      +'<span style="font-size:11px;color:#9CA3AF">·</span>'
+      +'<div class="fee-tag" onmouseenter="showTip(event,\'Payment types\','+JSON.stringify(f.payments)+')" onmouseleave="hideTip()"><i class="ti ti-credit-card" style="font-size:10px"></i> '+f.payments.length+' payment type'+(f.payments.length>1?'s':'')+'</div>'
+      +'<span style="font-size:11px;color:#9CA3AF">·</span>'
+      +'<div class="fee-tag" onmouseenter="showTip(event,\'Transaction types\','+JSON.stringify(f.transactions)+')" onmouseleave="hideTip()"><i class="ti ti-arrows-exchange" style="font-size:10px"></i> '+f.transactions.length+' transaction type'+(f.transactions.length>1?'s':'')+'</div>'
+      +'</div>'
+      +'<span class="fee-val">Fee: '+f.val+'</span>'
+      +'<i class="ti ti-chevron-down fee-chev"></i>'
+      +'</div>'
+      +'<div class="fee-card-body">'+buildFeeForm(f,i)+'</div>'
+      +'</div>';
+  });
+  document.getElementById('fee-rules-container').innerHTML=html;
+}
+
+function buildFeeForm(f,i){
+  var n=f||{};
+  var rate=n.rate||'buy';
+  var calc=n.calc||'Fixed';
+  var payments=n.payments||[];
+  var transactions=n.transactions||[];
+  return '<div style="margin-bottom:10px">'
+    +'<span class="field-lbl">Fee rate</span>'
+    +'<div class="radio-group">'
+    +'<label class="radio-opt"><input type="radio" name="rate-'+i+'" value="sell"'+(rate==='sell'?' checked':'')+'><div><div class="radio-opt-lbl">Sell rate</div><div class="radio-opt-sub">Fee paid by the merchant</div></div></label>'
+    +'<label class="radio-opt"><input type="radio" name="rate-'+i+'" value="buy"'+(rate==='buy'?' checked':'')+'><div><div class="radio-opt-lbl">Buy rate</div><div class="radio-opt-sub">Fee paid by Verifone to the service provider</div></div></label>'
+    +'</div></div>'
+    +'<div class="divider"></div>'
+    +'<div class="grid-2" style="margin-bottom:10px">'
+    +'<div><span class="field-lbl">Fee type</span><div class="sel-wrap"><select class="field-select"><option'+(n.type==='Verifone Processing Fee'?' selected':'')+'>Verifone Processing Fee</option><option'+(n.type==='Cross Border'?' selected':'')+'>Cross Border</option><option'+(n.type==='Interchange'?' selected':'')+'>Interchange</option></select><i class="ti ti-chevron-down chev"></i></div></div>'
+    +'<div><span class="field-lbl">Fee calculation type</span><div class="radio-inline"><label><input type="radio" name="calc-'+i+'" value="Fixed"'+(calc==='Fixed'?' checked':'')+'>Fixed</label><label><input type="radio" name="calc-'+i+'" value="Percentage"'+(calc==='Percentage'?' checked':'')+'>Percentage</label></div></div>'
+    +'</div>'
+    +'<div class="grid-2" style="margin-bottom:10px">'
+    +'<div><span class="field-lbl">Payment types</span><div class="multi-field">'+payments.map(function(p){return '<span class="sel-pill">'+p+' <button onclick="event.stopPropagation()"><i class="ti ti-x"></i></button></span>';}).join('')+'<i class="ti ti-chevron-down" style="font-size:11px;color:#9CA3AF;margin-left:auto"></i></div></div>'
+    +'<div><span class="field-lbl">Transaction types</span><div class="multi-field">'+transactions.map(function(t){return '<span class="sel-pill">'+t+' <button onclick="event.stopPropagation()"><i class="ti ti-x"></i></button></span>';}).join('')+'<i class="ti ti-chevron-down" style="font-size:11px;color:#9CA3AF;margin-left:auto"></i></div></div>'
+    +'</div>'
+    +'<div style="margin-bottom:10px"><span class="field-lbl">Fee value</span><input class="field-input" type="number" value="'+(n.val||0)+'" style="width:130px"><p class="fee-helper">Calculated for each transaction currency.</p></div>'
+    +'<div class="divider"></div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between">'
+    +'<button class="btn-danger-sm" onclick="deleteFee(event)"><i class="ti ti-trash" style="font-size:12px"></i> Delete</button>'
+    +'<div style="display:flex;gap:6px"><button class="btn-ghost-sm" onclick="toggleFee(\'fee-'+i+'\')">Discard</button><button class="btn-save-sm">Update</button></div>'
+    +'</div>';
+}
+
+function toggleFee(id){
+  var card=document.getElementById(id);
+  if(!card) return;
+  card.classList.toggle('open');
+}
+
+function addFeeRule(){
+  feeCount++;
+  var id='fee-new-'+feeCount;
+  var div=document.createElement('div');
+  div.className='fee-card open';
+  div.id=id;
+  div.innerHTML='<div class="fee-card-hd" onclick="toggleFee(\''+id+'\')">'
+    +'<i class="ti ti-grip-vertical" style="font-size:14px;color:#D1D5DB;cursor:grab"></i>'
+    +'<span class="new-fee-label">New fee — fill in details below</span>'
+    +'<i class="ti ti-chevron-down fee-chev" style="transform:rotate(180deg)"></i>'
+    +'</div>'
+    +'<div class="fee-card-body" style="display:block">'+buildFeeForm(null,id)
+    +'</div>';
+  var container=document.getElementById('fee-rules-container');
+  var empty=container.querySelector('.empty-fees');
+  if(empty) container.innerHTML='';
+  container.appendChild(div);
+  setTimeout(function(){div.scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+}
+
+function showTip(e, title, items){
+  var tip = document.getElementById('floating-tooltip');
+  var pills = items.map(function(p){return '<span class="fee-tooltip-pill">'+p+'</span>';}).join('');
+  tip.innerHTML = '<div class="fee-tooltip-title">'+title+'</div>'+pills;
+  tip.style.display = 'block';
+  var rect = e.currentTarget.getBoundingClientRect();
+  tip.style.top = (rect.bottom + 6) + 'px';
+  tip.style.left = (rect.left + rect.width/2) + 'px';
+  tip.style.transform = 'translateX(-50%)';
+}
+function hideTip(){
+  document.getElementById('floating-tooltip').style.display='none';
+}
+
+function updateFee(e, id){
+  e.stopPropagation();
+  var card = document.getElementById(id);
+  if(!card) return;
+  var nameEl = card.querySelector('.fee-card-hd .fee-label-text');
+  var feeType = card.querySelector('select') ? card.querySelector('select').value : '';
+  var feeVal = card.querySelector('input[type=number]') ? card.querySelector('input[type=number]').value : '0';
+  var calcInputs = card.querySelectorAll('input[type=radio][name^="calc-"]');
+  var calc = 'Fixed';
+  calcInputs.forEach(function(r){ if(r.checked) calc = r.value; });
+  var pills = card.querySelectorAll('.multi-field .sel-pill');
+  var payments = [], transactions = [];
+  card.querySelectorAll('.multi-field').forEach(function(mf, idx){
+    var tags = [];
+    mf.querySelectorAll('.sel-pill').forEach(function(sp){ tags.push(sp.textContent.trim()); });
+    if(idx===0) payments=tags; else transactions=tags;
+  });
+  var ptCount = payments.length||1;
+  var ttCount = transactions.length||1;
+  var hd = card.querySelector('.fee-card-hd');
+  var ptTip = (payments.length?payments:[feeType]).join(',');
+  var ttTip = (transactions.length?transactions:['Balance']).join(',');
+  var ptArr = payments.length?payments:[feeType];
+  var ttArr = transactions.length?transactions:['Balance'];
+  var ptHtml = '<div class="fee-tag" onmouseenter="showTip(event,\'Payment types\',[\'' + ptArr.join("\',\'") + '\'])" onmouseleave="hideTip()"><i class="ti ti-credit-card" style="font-size:10px"></i> '+ptCount+' payment type'+(ptCount>1?'s':'')+'</div>';
+  var ttHtml = '<div class="fee-tag" onmouseenter="showTip(event,\'Transaction types\',[\'' + ttArr.join("\',\'") + '\'])" onmouseleave="hideTip()"><i class="ti ti-arrows-exchange" style="font-size:10px"></i> '+ttCount+' transaction type'+(ttCount>1?'s':'')+'</div>';
+  var inner = hd.querySelector('div[style*="flex:1"]') || hd.querySelector('div');
+  if(inner){
+    inner.innerHTML = '<div style="display:flex;align-items:center;gap:6px">'
+      +'<span style="font-size:12px;font-weight:500;color:#111827;flex-shrink:0">'+feeType+'</span>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap" onclick="event.stopPropagation()">'
+      +ptHtml
+      +ttHtml
+      +'</div>';
+  }
+  var valEl = hd.querySelector('.fee-val');
+  if(valEl) valEl.textContent = 'Fee: '+feeVal;
+  card.classList.remove('open');
+}
+
+function deleteFee(e){
+  e.stopPropagation();
+  var card = e.target.closest('.fee-card');
+  if(card){
+    card.style.transition='opacity .15s';
+    card.style.opacity='0';
+    setTimeout(function(){
+      card.remove();
+      var container=document.getElementById('fee-rules-container');
+      if(container && container.querySelectorAll('.fee-card').length===0){
+        container.innerHTML='<div class="empty-fees"><i class="ti ti-receipt" style="font-size:22px;display:block;margin-bottom:6px"></i>No fee rules yet. Add one above.</div>';
+      }
+    },150);
+  }
+}
+buildTable();
+switchFeeTab('sell');
+</script>
+<div id="floating-tooltip"></div>
+</body>
+</html>
